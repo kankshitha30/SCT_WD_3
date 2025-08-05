@@ -1,27 +1,75 @@
-window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-        const menuBtn = document.querySelector('.menu-btn');
-        const navLinks = document.querySelector('.nav-links');
+let boxes=document.querySelectorAll(".box");
+let reset=document.querySelector("#reset");
+let newGameBtn=document.querySelector("#new-btn");
+let msgContainer=document.querySelector(".msg-container");
+let msg=document.querySelector("#msg");
 
-        menuBtn.addEventListener('click', function() {
-            navLinks.classList.toggle('active');
-            this.classList.toggle('open');
-        });
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', function() {
-                if (navLinks.classList.contains('active')) {
-                    navLinks.classList.remove('active');
-                    menuBtn.classList.remove('open');
-                }
-                document.querySelectorAll('.nav-links a').forEach(item => {
-                    item.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
+let turnO=true;
+
+const winPatterns=[
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6]
+];
+
+const resetGame=()=>{
+   turnO=true;
+   enableBoxes();
+   msgContainer.classList.add("hide");
+}
+
+boxes.forEach((box)=>{
+    box.addEventListener("click",()=>{
+       if(turnO==true)
+       {
+         box.innerText="O";
+         turnO=false;
+       }else{
+         box.innerText="X";
+         turnO=true;
+       }
+       box.disabled=true;
+       checkWinner();
+    })
+})
+
+const disableBoxes=()=>{
+    for(let box of boxes){
+        box.disabled=true;
+    }
+}
+
+const enableBoxes=()=>{
+    for(let box of boxes){
+        box.disabled=false;
+        box.innerText="";
+    }
+}
+
+const showWinner = (winner)=>{
+    msg.innerText=`Congratulations, winner is ${winner}`;
+    msgContainer.classList.remove("hide");
+    disableBoxes();
+}
+
+const checkWinner=()=>{
+   for(let pattern of winPatterns)
+   {
+    let pos1Val=boxes[pattern[0]].innerText;
+    let pos2Val=boxes[pattern[1]].innerText;
+    let pos3Val=boxes[pattern[2]].innerText;
+    if(pos1Val!="" && pos2Val!="" && pos3Val!=""){
+        if(pos1Val==pos2Val && pos2Val==pos3Val){
+            showWinner(pos1Val);
+        }
+    }
+   }
+};
+
+newGameBtn.addEventListener("click",resetGame);
+reset.addEventListener("click",resetGame);
